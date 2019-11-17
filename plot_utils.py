@@ -7,7 +7,6 @@ from matplotlib import colors as mcolors
 
 
 
-
 # Variables 
 ##########################################
 plt_colors_base = list(dict(mcolors.BASE_COLORS).keys())
