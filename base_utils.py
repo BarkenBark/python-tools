@@ -2,29 +2,8 @@
 import os
 import pickle
 
-# Change the filenames of files in 'directory' whose filenames are numbers to be formatted with 'n_leading_zeros' zeros
-# Specify 'fileformat' to only affect files ending with that extension
-def change_num_format(directory, fileformat=None, n_neading_zeros=5):
-	for filename in os.listdir(directory):
-		if fileformat is not None:
-			if filename.endswith(fileformat):
-				filename_no_ext = os.path.splitext(filename)[0]
-				this_fileformat = os.path.splitext(filename)[1]
-				try:
-					num = int(filename_no_ext)
-					new_filename = str(num).zfill(n_neading_zeros)+this_fileformat
-					os.rename(filename, new_filename)
-				except ValueError:
-					pass
-
-# Print the specified attributes of some variables
-# e.g. my_np_array.shape (4,5), my_np_array.dtype int64
-def print_attributes(*attributes, **variables):
-	if variables is not None:
-		for name, variable in variables.items():
-			for attribute in attributes:
-				print('{}: \n{}'.format(name+'.'+attribute, getattr(variable, attribute)))
-			print()
+# DIRECTORY AND FILE MANIPULATION
+################################################
 
 # Find the number of files in 'directory'
 # Specify 'fileformat' to only count files ending with that extension
@@ -37,6 +16,34 @@ def find_nbr_of_files(directory, format=None):
 					n += 1
 	return n
 
+# Change the filenames of files in 'directory' whose filenames are numbers to be formatted with 'n_leading_zeros' zeros
+# Specify 'fileformat' to only affect files ending with that extension
+def change_num_format(directory, fileformat=None, n_leading_zeros=5):
+	for filename in os.listdir(directory):
+		if fileformat is not None:
+			if filename.endswith(fileformat):
+				filename_no_ext = os.path.splitext(filename)[0]
+				this_fileformat = os.path.splitext(filename)[1]
+				try:
+					num = int(filename_no_ext)
+					new_filename = str(num).zfill(n_neading_zeros)+this_fileformat
+					os.rename(filename, new_filename)
+				except ValueError:
+					pass
+
+
+
+# DATA MANIPULATION
+##############################################
+
+# Print the specified attributes of some variables
+# e.g. my_np_array.shape (4,5), my_np_array.dtype int64
+def print_attributes(*attributes, **variables):
+	if variables is not None:
+		for name, variable in variables.items():
+			for attribute in attributes:
+				print('{}: \n{}'.format(name+'.'+attribute, getattr(variable, attribute)))
+			print()
 
 # Return every 'n_skips' elements for all indexable objects in args.
 # Requires the length of the objects in args to have same size along first dimension/axis
@@ -51,6 +58,7 @@ def downsample_skip(n_skips=1, *args):
 	return selectedData
 
 # Return elements at indices specified in 'idx' (list) from indexable objects in 'args'
+# NOTE: This functions is kind of rendered pointless by zip
 def get_selected_data(idx, *args):
 	n_elements = len(args[0])
 	for arg in args:
@@ -114,15 +122,18 @@ def save_pickle(var, path):
 	with open(path, 'wb') as file:
 		pickle.dump(var, file)
 
+# Load the contents of the pickle file at 'path'
 def load_pickle(path):
 	with open(path, 'rb') as file:
 		return pickle.load(file)
 
+# Save the string of 'var' to path
 def save_txt(var, path):
 	os.makedirs(os.path.dirname(path), exist_ok=True)
 	with open(path, 'w') as file:
 		file.write(str(var))
 
+# Load the string content of the file at 'path'
 def load_txt(path):
 	with open(path, 'r') as file:
 		return file.read()
