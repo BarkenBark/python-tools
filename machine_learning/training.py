@@ -123,6 +123,8 @@ else:
 	loss_validation_improvement = loss_validation_best
 	n_epochs_since_improvement = 0
 
+
+
 # Start training
 for iEpoch in range(starting_epoch, n_epochs):
 
