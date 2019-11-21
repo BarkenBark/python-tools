@@ -50,6 +50,28 @@ def color_cycler_plt(colormap='base', order=None, n_colors=None, seed=None):
 
 	return plt_color_cycler
 
+# Scatter the 2D TSNE decomoposition of a dataset
+# NOTE: scikit-learn recommends using PCA to reduce the number of dimensions to less than 50 if it is higher than that before transforming with TSNE
+# TODO: Implement downsampling
+def scatter_tsne_2d(data, downsampling_ratio=0):
+    # data - list of [n_samples, n_features]-ndarrays, ech array representing features from various samples of the same identity
+
+    tsne = TSNE(n_components=2)
+    color_cycler = plt_color_cycler()
+
+    x_all = np.concatenate(tuple(data), axis=0)
+    x_transformed = tsne.fit_transform(x_all)
+
+    n_labels = len(data)
+    prev_idx = 0
+    for i in range(n_labels):
+        this_n_samples = data[i].shape[0]
+        x = x_transformed[prev_idx:prev_idx+this_n_samples,:]
+        prev_idx += this_n_samples
+        color = next(color_cycler)
+        plt.scatter(x[:,0], x[:,1], c=color)
+
+    plt.show()
 
 
 
