@@ -54,8 +54,8 @@ def downsample_skip(n_skips=1, *args):
 		assert(len(args[i])==nElements)
 	selected_elements_range = range(0, n_elements, n_skips)
 	selected_elements_slice = slice(0, n_elements, n_skips)
-	selectedData = tuple([arg[selected_elements_slice] if type(arg) == list else arg[selected_elements_range] for arg in args])
-	return selectedData
+	selected_data = tuple([arg[selected_elements_slice] if type(arg) == list else arg[selected_elements_range] for arg in args])
+	return selected_data
 
 # Return elements at indices specified in 'idx' (list) from indexable objects in 'args'
 # NOTE: This functions is kind of rendered pointless by zip
