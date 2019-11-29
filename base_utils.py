@@ -104,10 +104,11 @@ def base36encode(integer):
 
     return encoded
 
-# Checks the number of existing files in 'directory' of format 'fileformat', and stores 'file' with the next filename in the sequence, assuming all images are named e.g. 00001.jpg, 00002.jpg, ....
-# TODO: Parse n_leading_zeros
-def add_image_to_directory(file, directory, write_method, fileformat, n_leading_zeros=5):
+# Checks the number of existing files in 'directory' of format 'fileformat', and stores 'file' with the next filename in the sequence, assuming all files are named e.g. 00001.fileformat, 00002.fileformat, ....
+def add_file_to_directory(file, directory, write_method, fileformat, n_leading_zeros=None):
     existing_files = os.listdir(directory)
+    if n_leading_zeros is None:
+    	n_leading_zeros = len(existing_files[0])
     existing_indices = [int(os.path.splitext(file)[0]) for file in existing_files if file.endswith(file_format)]
     if len(existing_indices) > 0:
         max_index = max(existing_indices)
