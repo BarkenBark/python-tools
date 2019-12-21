@@ -32,7 +32,14 @@ def change_num_format(directory, fileformat=None, n_leading_zeros=5):
 				except ValueError:
 					pass
 
+# Remove last part of string starting with a dot, including the dot
+def remove_extension(file_path):
+    if len(file_path.split('.')) > 1:
+        return ''.join([x for i,x in enumerate(file_path.split('.')) if i < len(file_path.split('.'))-1])
+    else:
+        return file_path
 
+        
 
 # DATA MANIPULATION
 ##############################################
