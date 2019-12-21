@@ -200,3 +200,31 @@ class Stopwatch:
 		elapsed = self.reset()
 		self.start()
 		return elapsed
+
+
+
+# DATA STRUCTURES
+##########################################
+
+# Class which implements a simple ring buffer
+# todo: Allow resizing ringbuffer after instantiation
+class RingBuffer:
+
+	def __init__(self, buffer_size=10):
+		self.__items = [None]*buffer_size
+		self.__buffer_size = buffer_size
+		self.__index = 0
+
+	def items(self):
+		return self.__items
+
+	def put(self, item):
+		self.__items[self.__index] = item
+		self.__index = (self.__index + 1) % self.__buffer_size
+
+	def n_latest(self, n):
+		assert(n <= self.__buffer_size)
+		latest_items = []
+		for i in reversed(range(n)):
+			latest_items.append(self.__items[(self.__index-i-1) % self.__buffer_size])
+		return latest_items
