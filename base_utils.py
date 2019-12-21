@@ -1,6 +1,7 @@
 # Functions here have no dependencies outside the Python Standard Library
 import os
 import pickle
+import time
 
 # DIRECTORY AND FILE MANIPULATION
 ################################################
@@ -138,3 +139,57 @@ def save_txt(var, path):
 def load_txt(path):
 	with open(path, 'r') as file:
 		return file.read()
+
+
+
+# TIME MEASUREMENTS
+#####################################################
+
+# Stopwatch class with similar functionality to Stopwatch in C#
+class Stopwatch:
+
+	def __init__(self):
+		self.__is_running = False
+		self.__elapsed = 0
+		self.__start_time = 0
+		self.__stop_time = 0
+
+	def is_running(self):
+		return self.__is_running
+
+	# Return the total elapsed time measured for an interval.
+	# An interval is defined to be the time during whiich the stopwatch is running.
+	def elapsed(self):
+ 		if self.__is_running:
+ 			return self.__elapsed + time.time() - self.__start_time
+ 		else:
+ 			return self.__elapsed
+
+	# Starts measuring elapsed time for an interval.
+	def start(self):
+		if not self.__is_running:
+			self.__start_time = time.time()
+			self.__is_running = True
+
+	# Stops measuring elapsed time for an interval.
+	# Returns elapsed time before stop.
+	def stop(self):
+		if self.__is_running:
+			self.__stop_time = time.time()
+			self.__elapsed += self.__stop_time - self.__start_time
+			self.__is_running = False
+		return self.__elapsed
+
+	# Stops time interval measurement and resets the elapsed time to zero.
+	# Returns elapsed time before reset.
+	def reset(self):
+		elapsed = self.stop()
+		self.__elapsed = 0
+		return elapsed
+
+	# Stops time interval measurement, resets the elapsed time to zero, and starts measuring elapsed time.
+	# Returns elapsed time before restart.
+	def restart(self):
+		elapsed = self.reset()
+		self.start()
+		return elapsed
