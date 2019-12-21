@@ -152,6 +152,58 @@ def load_txt(path):
 # TIME MEASUREMENTS
 #####################################################
 
+# Class for measuring time between ticks and storing samples
+# Assume time to perform tick() is negligible 
+class Clocker:
+
+	def __init__(self, buffer_size=100, log_path=None):
+		self.log_path = log_path
+		self.__stopwatch = Stopwatch()
+		self.__buffer = RingBuffer(buffer_size)
+
+	def tick(self):
+		if self.__stopwatch.is_running():
+			elapsed = self.__stopwatch.elapsed()
+			self.__stopwatch.restart()
+			self.__buffer.put(elapsed)
+		else:
+			elapsed = 0
+			self.__stopwatch.start()
+		return elapsed
+
+	def samples(self):
+		return self.__buffer.items()
+
+# Class for measuring time between ticks and storing samples for multiple sources
+# Assume time to perform tick() is negligible. # WARNING: Current implementation is very inefficient, assumption does not hold for some cases
+# TODO: Warn user when measuring times too fast for this class to work properly with/without logging 
+# TODO: Find more efficient implementation
+class MultiClocker:
+
+	def __init__(self, buffer_size=100, log_dir=None):
+		self.log_dir = log_dir
+		self.__sources = {}
+		self.__buffer_size = buffer_size
+		print('WANING: This class is currently quite inefficient, and will probably add a slight bias to time measurements.\n If used on same thread as processing, it will potentially have an impact on processing performance.')
+
+	def tick(self, source, log_to_file=False):
+		if source in self.__sources: # If we've already started measuring times for this event
+			elapsed = self.__sources[source]['stopwatch'].elapsed()
+			self.__sources[source]['stopwatch'].restart()
+			self.__sources[source]['samples'].put(elapsed)
+			if 'logfile' in self.__sources[source]:
+				self.__sources[source]['logfile'].write(elapsed+'\n')
+		else: # Add source to dict of measured sources
+			elapsed = 0
+			self.__sources[source] = {'stopwatch': Stopwatch(), 'samples': RingBuffer(self.__buffer_size)}
+			if self.log_dir is not None and log_to_file:
+				self.__sources[source]['logfile'] = open(os.path.join(log_dir, source+'.txt'), 'a')
+			self.__sources[source]['stopwatch'].start()
+		return elapsed
+
+	def samples(self, source):
+		return self.__sources[source]['samples'].items()
+
 # Stopwatch class with similar functionality to Stopwatch in C#
 class Stopwatch:
 
@@ -222,7 +274,10 @@ class RingBuffer:
 		self.__items[self.__index] = item
 		self.__index = (self.__index + 1) % self.__buffer_size
 
-	def n_latest(self, n):
+	def last(self):
+		return self.__items[(self.__index-1) % self.__buffer_size]
+
+	def n_last(self, n):
 		assert(n <= self.__buffer_size)
 		latest_items = []
 		for i in reversed(range(n)):
