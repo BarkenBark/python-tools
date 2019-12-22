@@ -15,6 +15,8 @@ def find_nbr_of_files(directory, format=None):
 			if format is not None:
 				if item.endswith(format):
 					n += 1
+			else:
+				n += 1
 	return n
 
 # Change the filenames of files in 'directory' whose filenames are numbers to be formatted with 'n_leading_zeros' zeros
