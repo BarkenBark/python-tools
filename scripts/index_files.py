@@ -1,22 +1,25 @@
 # Script to rename multiple files in a directory to numerically indexed filenames
   
 import os 
+import sys
 import argparse
+
 from barktools.base_utils import find_nbr_of_files
 
 # Parse arguments
 
-def index_files(target_dir, file_format, n_leading_zeros=6):
+def index_files(target_dir, extension, n_leading_zeros=6):
 	i = 0 
-	n_files = find_nbr_of_files(target_dir, file_format)
+	n_files = find_nbr_of_files(target_dir, extension)
 	for filename in os.listdir(target_dir): 
-		if filename.endswith(file_format):
-		    dst = str(i).zfill(n_leading_zeros) + '.' +  file_format
+		if filename.endswith(extension):
+		    dst = str(i).zfill(n_leading_zeros) + '.' +  extension
 		    src = os.path.join(target_dir, filename) 
 		    dst = os.path.join(target_dir, dst)
 		    os.rename(src, dst) 
 		    i += 1
 		    sys.stdout.write("\rProcessed {}/{} files.".format(i, n_files))
+	print()
 
 def main():
 	parser = argparse.ArgumentParser()
@@ -26,7 +29,9 @@ def main():
 	args = parser.parse_args()
 	target_dir = args.directory
 	n_leading_zeros = int(args.leading_zeros)
-	file_format = args.extension
+	extension = args.extension
+
+	index_files(target_dir, extension, n_leading_zeros)
 
 if __name__ == '__main__':
 	main()
