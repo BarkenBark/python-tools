@@ -8,16 +8,32 @@ import time
 
 # Find the number of files in 'directory'
 # Specify 'fileformat' to only count files ending with that extension
-def find_nbr_of_files(directory, format=None):
+def find_nbr_of_files(directory, extension=None):
 	n = 0
-	for item in os.listdir(directory):
-		if os.path.isfile(os.path.join(directory, item)):
-			if format is not None:
-				if item.endswith(format):
+	for filename in os.listdir(directory):
+		if os.path.isfile(os.path.join(directory, filename)):
+			if extension is not None:
+				if filename.endswith(extension):
 					n += 1
 			else:
 				n += 1
 	return n
+
+# Return list of files in 'directory'
+# Specify 'fileformat' to only return files ending with that extension
+def get_files(directory, extension=None, include_dir=False):
+	files = []
+	for filename in os.listdir(directory):
+		if os.path.isfile(os.path.join(directory, filename)):
+			if extension is not None:
+				if not filename.endswith(extension):
+					continue
+			if include_dir:
+				filepath = os.path.join(directory, filename)
+			else:
+				filepath = filename
+			files.append(filepath)
+	return files
 
 # Change the filenames of files in 'directory' whose filenames are numbers to be formatted with 'n_leading_zeros' zeros
 # Specify 'fileformat' to only affect files ending with that extension
