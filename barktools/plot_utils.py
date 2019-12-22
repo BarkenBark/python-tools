@@ -2,8 +2,10 @@
 import random
 import itertools
 
+import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import colors as mcolors
+from sklearn.manifold import TSNE
 
 
 
@@ -54,10 +56,10 @@ def color_cycler_plt(colormap='base', order=None, n_colors=None, seed=None):
 # NOTE: scikit-learn recommends using PCA to reduce the number of dimensions to less than 50 if it is higher than that before transforming with TSNE
 # TODO: Implement downsampling
 def scatter_tsne_2d(data, downsampling_ratio=0):
-    # data - list of [n_samples, n_features]-ndarrays, ech array representing features from various samples of the same identity
+    # data - list of [n_samples, n_features]-ndarrays, each array representing features from various samples of the same identity
 
     tsne = TSNE(n_components=2)
-    color_cycler = plt_color_cycler()
+    color_cycler = color_cycler_plt()
 
     x_all = np.concatenate(tuple(data), axis=0)
     x_transformed = tsne.fit_transform(x_all)
