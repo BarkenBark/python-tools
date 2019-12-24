@@ -43,7 +43,7 @@ def train(model, data_loader, optimizer):
 		inputs, outputs_gt = [d.cuda() for d in data]
 
 		# Forward propagate
-		outputs_pred = model(input1, input2)
+		outputs_pred = model(inputs)
 
 		# Compute loss
 		loss = custom_loss(outputs_pred, outputs_gt)
@@ -62,12 +62,12 @@ def validate(model, data_loader):
 		model.eval()
 
 	# Iterate over batches
-	for idx, data in enumerate(valLoader):
+	for idx, data in enumerate(data_loader):
 		with torch.no_grad():
 
 			# Extract data and forward propagate
 			inputs, outputs_gt = [d.cuda() for d in data]
-			outputs_pred = model(image)
+			outputs_pred = model(inputs)
 
 			# Compute loss
 			loss = custom_loss(outputs_pred, outputs_gt)
