@@ -21,7 +21,7 @@ def find_nbr_of_files(directory, extension=None):
 
 # Return list of files in 'directory'
 # Specify 'fileformat' to only return files ending with that extension
-def get_files(directory, extension=None, include_dir=False):
+def list_files(directory, extension=None, include_dir=False):
 	files = []
 	for filename in os.listdir(directory):
 		if os.path.isfile(os.path.join(directory, filename)):
