@@ -21,6 +21,8 @@ def find_nbr_of_files(directory, extension=None):
 
 # Return list of files in 'directory'
 # Specify 'fileformat' to only return files ending with that extension
+# include_dir=True => include directory in paths
+# TODO: Add recursive search, replace list_files_recursive below
 def list_files(directory, extension=None, include_dir=False):
 	files = []
 	for filename in os.listdir(directory):
@@ -34,6 +36,13 @@ def list_files(directory, extension=None, include_dir=False):
 				filepath = filename
 			files.append(filepath)
 	return files
+
+# Return list of paths in 'directory' and subdirectories
+# Specify 'fileformat' to only return files ending with that extension
+# include_dir=True => include directory in paths # TODO: Implement this, now we always have include_dir=True functionality
+def list_files_recursive(directory, extension=None, include_dir=False):
+    return [os.path.join(root, file) for root, dirs, files in os.walk(start_dir) for file in files if file.endswith(extension)]
+
 
 # Change the filenames of files in 'directory' whose filenames are numbers to be formatted with 'n_leading_zeros' zeros
 # Specify 'fileformat' to only affect files ending with that extension
