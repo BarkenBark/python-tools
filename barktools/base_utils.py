@@ -7,7 +7,7 @@ import time
 ################################################
 
 # Find the number of files in 'directory'
-# Specify 'fileformat' to only count files ending with that extension
+# Specify 'extension' to only count files ending with that extension
 def find_nbr_of_files(directory, extension=None):
 	n = 0
 	for filename in os.listdir(directory):
@@ -20,7 +20,7 @@ def find_nbr_of_files(directory, extension=None):
 	return n
 
 # Return list of files in 'directory'
-# Specify 'fileformat' to only return files ending with that extension
+# Specify 'extension' to only return files ending with that extension
 # include_dir=True => include directory in paths
 # TODO: Add recursive search, replace list_files_recursive below
 def list_files(directory, extension=None, include_dir=False):
@@ -38,23 +38,23 @@ def list_files(directory, extension=None, include_dir=False):
 	return files
 
 # Return list of paths in 'directory' and subdirectories
-# Specify 'fileformat' to only return files ending with that extension
+# Specify 'extension' to only return files ending with that extension
 # include_dir=True => include directory in paths # TODO: Implement this, now we always have include_dir=True functionality
 def list_files_recursive(directory, extension=None, include_dir=False):
     return [os.path.join(root, file) for root, dirs, files in os.walk(start_dir) for file in files if file.endswith(extension)]
 
 
 # Change the filenames of files in 'directory' whose filenames are numbers to be formatted with 'n_leading_zeros' zeros
-# Specify 'fileformat' to only affect files ending with that extension
-def change_num_format(directory, fileformat=None, n_leading_zeros=5):
+# Specify 'extension' to only affect files ending with that extension
+def change_num_format(directory, extension=None, n_leading_zeros=5):
 	for filename in os.listdir(directory):
-		if fileformat is not None:
-			if filename.endswith(fileformat):
+		if extension is not None:
+			if filename.endswith(extension):
 				filename_no_ext = os.path.splitext(filename)[0]
-				this_fileformat = os.path.splitext(filename)[1]
+				this_extension = os.path.splitext(filename)[1]
 				try:
 					num = int(filename_no_ext)
-					new_filename = str(num).zfill(n_neading_zeros)+this_fileformat
+					new_filename = str(num).zfill(n_neading_zeros)+this_extension
 					os.rename(filename, new_filename)
 				except ValueError:
 					pass
@@ -139,8 +139,8 @@ def base36encode(integer):
 
     return encoded
 
-# Checks the number of existing files in 'directory' of format 'fileformat', and stores 'file' with the next filename in the sequence, assuming all files are named e.g. 00001.fileformat, 00002.fileformat, ....
-def add_file_to_directory(file, directory, write_method, fileformat, n_leading_zeros=None):
+# Checks the number of existing files in 'directory' of format 'extension', and stores 'file' with the next filename in the sequence, assuming all files are named e.g. 00001.extension, 00002.extension, ....
+def add_file_to_directory(file, directory, write_method, extension, n_leading_zeros=None):
     existing_files = os.listdir(directory)
     if n_leading_zeros is None:
     	n_leading_zeros = len(existing_files[0])
