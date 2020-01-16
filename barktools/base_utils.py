@@ -10,33 +10,33 @@ import random
 # Find the number of files in 'directory'
 # Specify 'extension' to only count files ending with that extension
 def find_nbr_of_files(directory, extension=None):
-	n = 0
-	for filename in os.listdir(directory):
-		if os.path.isfile(os.path.join(directory, filename)):
-			if extension is not None:
-				if filename.endswith(extension):
-					n += 1
-			else:
-				n += 1
-	return n
+    n = 0
+    for filename in os.listdir(directory):
+        if os.path.isfile(os.path.join(directory, filename)):
+            if extension is not None:
+                if filename.endswith(extension):
+                    n += 1
+            else:
+                n += 1
+    return n
 
 # Return list of files in 'directory'
 # Specify 'extension' to only return files ending with that extension
 # include_dir=True => include directory in paths
 # TODO: Add recursive search, replace list_files_recursive below
 def list_files(directory, extension=None, include_dir=False):
-	files = []
-	for filename in os.listdir(directory):
-		if os.path.isfile(os.path.join(directory, filename)):
-			if extension is not None:
-				if not filename.endswith(extension):
-					continue
-			if include_dir:
-				filepath = os.path.join(directory, filename)
-			else:
-				filepath = filename
-			files.append(filepath)
-	return files
+    files = []
+    for filename in os.listdir(directory):
+        if os.path.isfile(os.path.join(directory, filename)):
+            if extension is not None:
+                if not filename.endswith(extension):
+                    continue
+            if include_dir:
+                filepath = os.path.join(directory, filename)
+            else:
+                filepath = filename
+            files.append(filepath)
+    return files
 
 # Return list of paths in 'directory' and subdirectories
 # Specify 'extension' to only return files ending with that extension
@@ -48,17 +48,17 @@ def list_files_recursive(directory, extension=None, include_dir=False):
 # Change the filenames of files in 'directory' whose filenames are numbers to be formatted with 'n_leading_zeros' zeros
 # Specify 'extension' to only affect files ending with that extension
 def change_num_format(directory, extension=None, n_leading_zeros=5):
-	for filename in os.listdir(directory):
-		if extension is not None:
-			if filename.endswith(extension):
-				filename_no_ext = os.path.splitext(filename)[0]
-				this_extension = os.path.splitext(filename)[1]
-				try:
-					num = int(filename_no_ext)
-					new_filename = str(num).zfill(n_neading_zeros)+this_extension
-					os.rename(filename, new_filename)
-				except ValueError:
-					pass
+    for filename in os.listdir(directory):
+        if extension is not None:
+            if filename.endswith(extension):
+                filename_no_ext = os.path.splitext(filename)[0]
+                this_extension = os.path.splitext(filename)[1]
+                try:
+                    num = int(filename_no_ext)
+                    new_filename = str(num).zfill(n_neading_zeros)+this_extension
+                    os.rename(filename, new_filename)
+                except ValueError:
+                    pass
 
 # Remove last part of string starting with a dot, including the dot
 def remove_extension(file_path):
@@ -75,32 +75,32 @@ def remove_extension(file_path):
 # Print the specified attributes of some variables
 # e.g. my_np_array.shape (4,5), my_np_array.dtype int64
 def print_attributes(*attributes, **variables):
-	if variables is not None:
-		for name, variable in variables.items():
-			for attribute in attributes:
-				print('{}: \n{}'.format(name+'.'+attribute, getattr(variable, attribute)))
-			print()
+    if variables is not None:
+        for name, variable in variables.items():
+            for attribute in attributes:
+                print('{}: \n{}'.format(name+'.'+attribute, getattr(variable, attribute)))
+            print()
 
 # Return every 'n_skips' elements for all indexable objects in args.
 # Requires the length of the objects in args to have same size along first dimension/axis
 # e.g. a, b = downsample_skip(2, [1,2,3,4], ['a','b','c','d']) => a=[1,3], b=['a', 'c']
 def downsample_skip(n_skips=1, *args):
-	n_elements = len(args[0])
-	for i in len(args):
-		assert(len(args[i])==nElements)
-	selected_elements_range = range(0, n_elements, n_skips)
-	selected_elements_slice = slice(0, n_elements, n_skips)
-	selected_data = tuple([arg[selected_elements_slice] if type(arg) == list else arg[selected_elements_range] for arg in args])
-	return selected_data
+    n_elements = len(args[0])
+    for i in len(args):
+        assert(len(args[i])==nElements)
+    selected_elements_range = range(0, n_elements, n_skips)
+    selected_elements_slice = slice(0, n_elements, n_skips)
+    selected_data = tuple([arg[selected_elements_slice] if type(arg) == list else arg[selected_elements_range] for arg in args])
+    return selected_data
 
 # Return elements at indices specified in 'idx' (list) from indexable objects in 'args'
 # NOTE: This functions is kind of rendered pointless by zip
 def get_selected_data(idx, *args):
-	n_elements = len(args[0])
-	for arg in args:
-		assert(len(arg)==n_elements)
-	selected_data = tuple([[arg[i] for i in idx] for arg in args])
-	return selected_data
+    n_elements = len(args[0])
+    for arg in args:
+        assert(len(arg)==n_elements)
+    selected_data = tuple([[arg[i] for i in idx] for arg in args])
+    return selected_data
 
 
 
@@ -144,7 +144,7 @@ def base36encode(integer):
 def add_file_to_directory(file, directory, write_method, extension, n_leading_zeros=None):
     existing_files = os.listdir(directory)
     if n_leading_zeros is None:
-    	n_leading_zeros = len(existing_files[0])
+        n_leading_zeros = len(existing_files[0])
     existing_indices = [int(os.path.splitext(file)[0]) for file in existing_files if file.endswith(file_format)]
     if len(existing_indices) > 0:
         max_index = max(existing_indices)
@@ -155,25 +155,29 @@ def add_file_to_directory(file, directory, write_method, extension, n_leading_ze
 
 # Save 'var' as a pickle file at 'path'
 def save_pickle(var, path):
-	os.makedirs(os.path.dirname(path), exist_ok=True)
-	with open(path, 'wb') as file:
-		pickle.dump(var, file)
+    dirname = os.path.dirname(path)
+    if len(dirname) > 0: 
+        os.makedirs(dirname, exist_ok=True)
+    with open(path, 'wb') as file:
+        pickle.dump(var, file)
 
 # Load the contents of the pickle file at 'path'
 def load_pickle(path):
-	with open(path, 'rb') as file:
-		return pickle.load(file)
+    with open(path, 'rb') as file:
+        return pickle.load(file)
 
 # Save the string of 'var' to path
 def save_txt(var, path):
-	os.makedirs(os.path.dirname(path), exist_ok=True)
-	with open(path, 'w') as file:
-		file.write(str(var))
+    dirname = os.path.dirname(path)
+    if len(dirname) > 0: 
+        os.makedirs(dirname, exist_ok=True)
+    with open(path, 'w') as file:
+        file.write(str(var))
 
 # Load the string content of the file at 'path'
 def load_txt(path):
-	with open(path, 'r') as file:
-		return file.read()
+    with open(path, 'r') as file:
+        return file.read()
 
 
 
@@ -184,23 +188,23 @@ def load_txt(path):
 # Assume time to perform tick() is negligible 
 class Clocker:
 
-	def __init__(self, buffer_size=100, log_path=None):
-		self.log_path = log_path
-		self.__stopwatch = Stopwatch()
-		self.__buffer = RingBuffer(buffer_size)
+    def __init__(self, buffer_size=100, log_path=None):
+        self.log_path = log_path
+        self.__stopwatch = Stopwatch()
+        self.__buffer = RingBuffer(buffer_size)
 
-	def tick(self):
-		if self.__stopwatch.is_running():
-			elapsed = self.__stopwatch.elapsed()
-			self.__stopwatch.restart()
-			self.__buffer.put(elapsed)
-		else:
-			elapsed = 0
-			self.__stopwatch.start()
-		return elapsed
+    def tick(self):
+        if self.__stopwatch.is_running():
+            elapsed = self.__stopwatch.elapsed()
+            self.__stopwatch.restart()
+            self.__buffer.put(elapsed)
+        else:
+            elapsed = 0
+            self.__stopwatch.start()
+        return elapsed
 
-	def samples(self):
-		return self.__buffer.items()
+    def samples(self):
+        return self.__buffer.items()
 
 # Class for measuring time between ticks and storing samples for multiple sources
 # Assume time to perform tick() is negligible. # WARNING: Current implementation is very inefficient, assumption does not hold for some cases
@@ -208,78 +212,78 @@ class Clocker:
 # TODO: Find more efficient implementation
 class MultiClocker:
 
-	def __init__(self, buffer_size=100, log_dir=None):
-		self.log_dir = log_dir
-		self.__sources = {}
-		self.__buffer_size = buffer_size
-		print('WANING: This class is currently quite inefficient, and will probably add a slight bias to time measurements.\n If used on same thread as processing, it will potentially have an impact on processing performance.')
+    def __init__(self, buffer_size=100, log_dir=None):
+        self.log_dir = log_dir
+        self.__sources = {}
+        self.__buffer_size = buffer_size
+        print('WANING: This class is currently quite inefficient, and will probably add a slight bias to time measurements.\n If used on same thread as processing, it will potentially have an impact on processing performance.')
 
-	def tick(self, source, log_to_file=False):
-		if source in self.__sources: # If we've already started measuring times for this event
-			elapsed = self.__sources[source]['stopwatch'].elapsed()
-			self.__sources[source]['stopwatch'].restart()
-			self.__sources[source]['samples'].put(elapsed)
-			if 'logfile' in self.__sources[source]:
-				self.__sources[source]['logfile'].write(elapsed+'\n')
-		else: # Add source to dict of measured sources
-			elapsed = 0
-			self.__sources[source] = {'stopwatch': Stopwatch(), 'samples': RingBuffer(self.__buffer_size)}
-			if self.log_dir is not None and log_to_file:
-				self.__sources[source]['logfile'] = open(os.path.join(log_dir, source+'.txt'), 'a')
-			self.__sources[source]['stopwatch'].start()
-		return elapsed
+    def tick(self, source, log_to_file=False):
+        if source in self.__sources: # If we've already started measuring times for this event
+            elapsed = self.__sources[source]['stopwatch'].elapsed()
+            self.__sources[source]['stopwatch'].restart()
+            self.__sources[source]['samples'].put(elapsed)
+            if 'logfile' in self.__sources[source]:
+                self.__sources[source]['logfile'].write(elapsed+'\n')
+        else: # Add source to dict of measured sources
+            elapsed = 0
+            self.__sources[source] = {'stopwatch': Stopwatch(), 'samples': RingBuffer(self.__buffer_size)}
+            if self.log_dir is not None and log_to_file:
+                self.__sources[source]['logfile'] = open(os.path.join(log_dir, source+'.txt'), 'a')
+            self.__sources[source]['stopwatch'].start()
+        return elapsed
 
-	def samples(self, source):
-		return self.__sources[source]['samples'].items()
+    def samples(self, source):
+        return self.__sources[source]['samples'].items()
 
 # Stopwatch class with similar functionality to Stopwatch in C#
 class Stopwatch:
 
-	def __init__(self):
-		self.__is_running = False
-		self.__elapsed = 0
-		self.__start_time = 0
-		self.__stop_time = 0
+    def __init__(self):
+        self.__is_running = False
+        self.__elapsed = 0
+        self.__start_time = 0
+        self.__stop_time = 0
 
-	def is_running(self):
-		return self.__is_running
+    def is_running(self):
+        return self.__is_running
 
-	# Return the total elapsed time measured for an interval.
-	# An interval is defined to be the time during whiich the stopwatch is running.
-	def elapsed(self):
- 		if self.__is_running:
- 			return self.__elapsed + time.time() - self.__start_time
- 		else:
- 			return self.__elapsed
+    # Return the total elapsed time measured for an interval.
+    # An interval is defined to be the time during whiich the stopwatch is running.
+    def elapsed(self):
+        if self.__is_running:
+            return self.__elapsed + time.time() - self.__start_time
+        else:
+            return self.__elapsed
 
-	# Starts measuring elapsed time for an interval.
-	def start(self):
-		if not self.__is_running:
-			self.__start_time = time.time()
-			self.__is_running = True
+    # Starts measuring elapsed time for an interval.
+    def start(self):
+        if not self.__is_running:
+            self.__start_time = time.time()
+            self.__is_running = True
 
-	# Stops measuring elapsed time for an interval.
-	# Returns elapsed time before stop.
-	def stop(self):
-		if self.__is_running:
-			self.__stop_time = time.time()
-			self.__elapsed += self.__stop_time - self.__start_time
-			self.__is_running = False
-		return self.__elapsed
+    # Stops measuring elapsed time for an interval.
+    # Returns elapsed time before stop.
+    def stop(self):
+        if self.__is_running:
+            self.__stop_time = time.time()
+            self.__elapsed += self.__stop_time - self.__start_time
+            self.__is_running = False
+        return self.__elapsed
 
-	# Stops time interval measurement and resets the elapsed time to zero.
-	# Returns elapsed time before reset.
-	def reset(self):
-		elapsed = self.stop()
-		self.__elapsed = 0
-		return elapsed
+    # Stops time interval measurement and resets the elapsed time to zero.
+    # Returns elapsed time before reset.
+    def reset(self):
+        elapsed = self.stop()
+        self.__elapsed = 0
+        return elapsed
 
-	# Stops time interval measurement, resets the elapsed time to zero, and starts measuring elapsed time.
-	# Returns elapsed time before restart.
-	def restart(self):
-		elapsed = self.reset()
-		self.start()
-		return elapsed
+    # Stops time interval measurement, resets the elapsed time to zero, and starts measuring elapsed time.
+    # Returns elapsed time before restart.
+    def restart(self):
+        elapsed = self.reset()
+        self.start()
+        return elapsed
 
 
 
@@ -290,24 +294,24 @@ class Stopwatch:
 # todo: Allow resizing ringbuffer after instantiation
 class RingBuffer:
 
-	def __init__(self, buffer_size=10):
-		self.__items = [None]*buffer_size
-		self.__buffer_size = buffer_size
-		self.__index = 0
+    def __init__(self, buffer_size=10):
+        self.__items = [None]*buffer_size
+        self.__buffer_size = buffer_size
+        self.__index = 0
 
-	def items(self):
-		return self.__items
+    def items(self):
+        return self.__items
 
-	def put(self, item):
-		self.__items[self.__index] = item
-		self.__index = (self.__index + 1) % self.__buffer_size
+    def put(self, item):
+        self.__items[self.__index] = item
+        self.__index = (self.__index + 1) % self.__buffer_size
 
-	def last(self):
-		return self.__items[(self.__index-1) % self.__buffer_size]
+    def last(self):
+        return self.__items[(self.__index-1) % self.__buffer_size]
 
-	def n_last(self, n):
-		assert(n <= self.__buffer_size)
-		latest_items = []
-		for i in reversed(range(n)):
-			latest_items.append(self.__items[(self.__index-i-1) % self.__buffer_size])
-		return latest_items
+    def n_last(self, n):
+        assert(n <= self.__buffer_size)
+        latest_items = []
+        for i in reversed(range(n)):
+            latest_items.append(self.__items[(self.__index-i-1) % self.__buffer_size])
+        return latest_items

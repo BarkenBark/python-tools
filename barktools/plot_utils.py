@@ -27,30 +27,30 @@ plt_colors_css4 = list(dict(mcolors.CSS4_COLORS).keys())
 # TO-DO: Better solution for seeding. Currently, seeding would affect all randomizations for the rest of the functions in this module, right?
 def color_cycler_plt(colormap='base', order=None, n_colors=None, seed=None): 
 
-	if colormap == 'base':
-		plt_colors = plt_colors_base
-	elif colormap == 'css4':
-		plt_colors = plt_colors_css4
-	else:
-		print('plt_color_cycler: Please specify a valid colormap. Using base for now.')
-		plt_colors = plt_colors_base
+    if colormap == 'base':
+        plt_colors = plt_colors_base
+    elif colormap == 'css4':
+        plt_colors = plt_colors_css4
+    else:
+        print('plt_color_cycler: Please specify a valid colormap. Using base for now.')
+        plt_colors = plt_colors_base
 
-	if seed is not None:
-		random.seed(seed)
+    if seed is not None:
+        random.seed(seed)
 
-	if order is not None:
-		if order == 'random':
-			order = list(range(len(plt_colors)))
-			random.shuffle(order)
-			if n_colors is not None:
-				order = [order[i] for i in range(n_colors)] # Shrink the list
+    if order is not None:
+        if order == 'random':
+            order = list(range(len(plt_colors)))
+            random.shuffle(order)
+            if n_colors is not None:
+                order = [order[i] for i in range(n_colors)] # Shrink the list
 
-		assert(isinstance(order, list))
-		plt_colors = [plt_colors[i] for i in order]
+        assert(isinstance(order, list))
+        plt_colors = [plt_colors[i] for i in order]
 
-	plt_color_cycler = itertools.cycle(plt_colors) # next(plt_color_cycler)
+    plt_color_cycler = itertools.cycle(plt_colors) # next(plt_color_cycler)
 
-	return plt_color_cycler
+    return plt_color_cycler
 
 # Scatter the 2D TSNE decomoposition of a dataset
 # NOTE: scikit-learn recommends using PCA to reduce the number of dimensions to less than 50 if it is higher than that before transforming with TSNE
@@ -100,7 +100,7 @@ class PlotScroller(object):
         self.len = self.ax_gen.len
         self.ax = ax
 
-		# State
+        # State
         self.index = 0
 
         # Initialize
