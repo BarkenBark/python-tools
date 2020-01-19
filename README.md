@@ -1,6 +1,6 @@
 # barktools
 
-A collection of utilities I find useful.
+A collection of utilities I find useful. Yes.
 
 ## Modules
 ### base_utils
@@ -19,3 +19,4 @@ Arguments:
 - -d, directory in which to index files
 - -n, number of leading zeros for target filenames
 - -e, only process files with this extension
+
