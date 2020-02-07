@@ -1,6 +1,7 @@
 # Functions here may depend on the matplotlib package
 import random
 import itertools
+import math
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -75,6 +76,15 @@ def scatter_tsne_2d(data, downsampling_ratio=0):
 
     plt.show()
 
+# Generate bin edges for a histogram with specified width for target data
+def get_bins(data, bin_width):
+    lower = min(data)
+    upper = max(data)
+    n_bins = math.ceil((upper-lower) / bin_width)
+    eps = (n_bins*bin_width - (upper-lower)) / 2
+    bins = [lower-eps+i*bin_width for i in range(n_bins+1)]
+    return bins
+
 
 
 # Classes
@@ -117,3 +127,5 @@ class PlotScroller(object):
     def draw(self):
         self.ax_gen.__update_ax__(self.ax, self.index)
         plt.draw()
+
+
