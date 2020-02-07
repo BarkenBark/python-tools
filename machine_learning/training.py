@@ -80,88 +80,93 @@ def validate(model, data_loader):
 # MAIN SCRIPT
 ###############################################
 
-# Create the model
-model = CustomModel()
-#model = DataParallel(model).cuda() # To enable more efficient computation
+def main():
 
-# Initialize the optimizer
-optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate) # e.g. Adam from torch
+	# Create the model
+	model = CustomModel()
+	#model = DataParallel(model).cuda() # To enable more efficient computation
 
-# Create the training dataloader
-training_set = CustomDataset(data_dir=training_data_dir)
-training_sampler = torch.utils.data.RandomSampler(training_set)
-training_sampler = torch.utils.data.BatchSampler(training_sampler, batch_size)
-training_loader = torch.utils.data.DataLoader(training_set, batch_sampler=training_sampler)
+	# Initialize the optimizer
+	optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate) # e.g. Adam from torch
 
-# Create the validation dataloader
-validation_set = CustomDataset(data_dir=validation_data_dir)
-validation_sampler = torch.utils.data.RandomSampler(validation_set)
-validation_sampler = torch.utils.data.BatchSampler(validation_sampler, batch_size)
-validation_loader = torch.utils.data.DataLoader(validation_set, batch_sampler=validation_sampler)
+	# Create the training dataloader
+	training_set = CustomDataset(data_dir=training_data_dir)
+	training_sampler = torch.utils.data.RandomSampler(training_set)
+	training_sampler = torch.utils.data.BatchSampler(training_sampler, batch_size)
+	training_loader = torch.utils.data.DataLoader(training_set, batch_sampler=training_sampler)
+
+	# Create the validation dataloader
+	validation_set = CustomDataset(data_dir=validation_data_dir)
+	validation_sampler = torch.utils.data.RandomSampler(validation_set)
+	validation_sampler = torch.utils.data.BatchSampler(validation_sampler, batch_size)
+	validation_loader = torch.utils.data.DataLoader(validation_set, batch_sampler=validation_sampler)
 
 
 
-# Initialize training state
-if resume_training:
-	print('Attempting to resume training from checkpoint at ' + checkpoint_path)
-	if os.path.isfile(checkpoint_path):
-		checkpoint = torch.load(checkpoint_path)
-		model.load_state_dict(checkpoint['model'])
-		optimizer.load_state_dict(checkpoint['optimizer'])
-		loss_training_history, loss_validation_history = checkpoint['loss']
-		starting_epoch = checkpoint['epoch_finished'] + 1
-		loss_validation_best = checkpoint['loss_validation_best']
-		loss_validation_improvement = checkpoint['loss_validation_improvement']
-		n_epochs_since_improvement = checkpoint['n_epochs_since_improvement']
+	# Initialize training state
+	if resume_training:
+		print('Attempting to resume training from checkpoint at ' + checkpoint_path)
+		if os.path.isfile(checkpoint_path):
+			checkpoint = torch.load(checkpoint_path)
+			model.load_state_dict(checkpoint['model'])
+			optimizer.load_state_dict(checkpoint['optimizer'])
+			loss_training_history, loss_validation_history = checkpoint['loss']
+			starting_epoch = checkpoint['epoch_finished'] + 1
+			loss_validation_best = checkpoint['loss_validation_best']
+			loss_validation_improvement = checkpoint['loss_validation_improvement']
+			n_epochs_since_improvement = checkpoint['n_epochs_since_improvement']
+		else:
+			print('No checkpoint found at ' + checkpoint_path + '. Exiting.')
+			exit()
 	else:
-		print('No checkpoint found at ' + checkpoint_path + '. Exiting.')
-		exit()
-else:
-	loss_training_history, loss_validation_history = ([],[])
-	starting_epoch = 0
-	loss_validation_best = 1.7976931348623157e+30
-	loss_validation_improvement = loss_validation_best
-	n_epochs_since_improvement = 0
+		loss_training_history, loss_validation_history = ([],[])
+		starting_epoch = 0
+		loss_validation_best = 1.7976931348623157e+30
+		loss_validation_improvement = loss_validation_best
+		n_epochs_since_improvement = 0
 
 
 
-# Start training
-for iEpoch in range(starting_epoch, n_epochs):
+	# Start training
+	for iEpoch in range(starting_epoch, n_epochs):
 
-	# Train the model
-	loss_training = train(model, training_loader, optimizer)
-	loss_training_history.append(loss_training)
+		# Train the model
+		loss_training = train(model, training_loader, optimizer)
+		loss_training_history.append(loss_training)
 
-	# Validate the model
-	loss_validation = validate(model, validation_loader)
-	loss_validation_history.append()
+		# Validate the model
+		loss_validation = validate(model, validation_loader)
+		loss_validation_history.append()
 
-	# Save the checkpoint
-	checkpoint = {
-		'epoch_finished': iEpoch,
-		'model': model.state_dict(),
-		'optimizer': optimizer.state_dict(),
-		'loss': (loss_training_history, loss_validation_history),
-		'loss_validation_best': loss_validation_best,
-		'loss_validation_improvement': loss_validation_improvement,
-		'n_epochs_since_improvement': n_epochs_since_improvement
-		}
-	torch.save(checkpoint, os.path.join(checkpoint_dir, 'checkpoint.pt'))
+		# Save the checkpoint
+		checkpoint = {
+			'epoch_finished': iEpoch,
+			'model': model.state_dict(),
+			'optimizer': optimizer.state_dict(),
+			'loss': (loss_training_history, loss_validation_history),
+			'loss_validation_best': loss_validation_best,
+			'loss_validation_improvement': loss_validation_improvement,
+			'n_epochs_since_improvement': n_epochs_since_improvement
+			}
+		torch.save(checkpoint, os.path.join(checkpoint_dir, 'checkpoint.pt'))
 
-	# Save the best model (TODO: Bake the datetime into filename)
-	if loss_validation < loss_validation_best:
-		loss_validation_best = loss_validation
-		torch.save(model.state_dict(), os.path.join(checkpoint_dir, 'best.pt'))
-		if loss_validation_best < loss_validation_improvement*(1-min_delta_factor):
-			loss_validation_improvement = loss_validation_best
-			n_epochs_since_improvement = 0
-	n_epochs_since_improvement += 1
+		# Save the best model (TODO: Bake the datetime into filename)
+		if loss_validation < loss_validation_best:
+			loss_validation_best = loss_validation
+			torch.save(model.state_dict(), os.path.join(checkpoint_dir, 'best.pt'))
+			if loss_validation_best < loss_validation_improvement*(1-min_delta_factor):
+				loss_validation_improvement = loss_validation_best
+				n_epochs_since_improvement = 0
+		n_epochs_since_improvement += 1
 
-	# Check early stopping condition
-	if n_epochs_since_improvement > patience:
-		print('EARLY STOPPING: Stopped at epoch {} after {} epochs without significant improvement'.format(iEpoch, patience))
-		break 
+		# Check early stopping condition
+		if n_epochs_since_improvement > patience:
+			print('EARLY STOPPING: Stopped at epoch {} after {} epochs without significant improvement'.format(iEpoch, patience))
+			break 
 
-#End epoch loop
-if iEpoch == nEpochs:
-	print('Stopped at epoch {} which was the final epoch.'.format(iEpoch))
+	#End epoch loop
+	if iEpoch == nEpochs:
+		print('Stopped at epoch {} which was the final epoch.'.format(iEpoch))
+
+if __name__=="__main__":
+	main()
