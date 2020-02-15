@@ -42,7 +42,8 @@ def list_files(directory, extension=None, include_dir=False):
 # Specify 'extension' to only return files ending with that extension
 # include_dir=True => include directory in paths # TODO: Implement this, now we always have include_dir=True functionality
 def list_files_recursive(directory, extension=None, include_dir=False):
-    return [os.path.join(root, file) for root, dirs, files in os.walk(start_dir) for file in files if file.endswith(extension)]
+
+    return [os.path.join(root, file) for root, dirs, files in os.walk(directory) for file in files if file.endswith(extension)]
 
 
 # Change the filenames of files in 'directory' whose filenames are numbers to be formatted with 'n_leading_zeros' zeros
