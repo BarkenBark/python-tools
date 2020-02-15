@@ -21,12 +21,29 @@ plt_colors_css4 = list(dict(mcolors.CSS4_COLORS).keys())
 # Functions
 ##########################################
 
-# Returns colorCycler which can be iterated with using 'next(coclorCycler)''
-# order can either be a string ('random') or a list
-# if order is a string, the number of colors can be specified with nColors
-# if order is a list, the number of colors is taken to be the length of the list
-# TO-DO: Better solution for seeding. Currently, seeding would affect all randomizations for the rest of the functions in this module, right?
+# TODO: Better solution for seeding. Currently, seeding would affect all randomizations for the rest of the functions in this module, right?
 def color_cycler_plt(colormap='base', order=None, n_colors=None, seed=None): 
+    ''' Returns an iterator for matplotlib colors
+
+        Parameters
+        --------------
+        colormap : str, ['base' (default), 'css4']
+            Name of colormap to use
+        order : (OPTIONAL) list of int OR str=='random'
+            I have no clue what I was smoking here, just leave it at None.
+            If order is a string ('random'), the number of colors can be specified with n_colors.
+            If order is a list, the number of colors is taken to be the length of the list.
+        n_colors : int
+            Same as above, just leave it at None
+        seed : int
+            I guess?
+
+        Returns
+        ------------
+        plt_color_cycler : iterator
+            Iterator for matplotlib colors
+
+    '''
 
     if colormap == 'base':
         plt_colors = plt_colors_base
@@ -49,16 +66,30 @@ def color_cycler_plt(colormap='base', order=None, n_colors=None, seed=None):
         assert(isinstance(order, list))
         plt_colors = [plt_colors[i] for i in order]
 
-    plt_color_cycler = itertools.cycle(plt_colors) # next(plt_color_cycler)
+    plt_color_cycler = itertools.cycle(plt_colors)
 
     return plt_color_cycler
 
-# Scatter the 2D TSNE decomoposition of a dataset
 # NOTE: scikit-learn recommends using PCA to reduce the number of dimensions to less than 50 if it is higher than that before transforming with TSNE
 # TODO: Implement downsampling
+# TODO: Refactor function to return an axis object
 def scatter_tsne_2d(data, downsampling_ratio=0):
-    # data - list of [n_samples, n_features]-ndarrays, each array representing features from various samples of the same identity
+    ''' Scatter the 2D TSNE decomoposition of a dataset
 
+        Parameters
+        -----------------
+        data : list of ndarrays, 
+            Each ndarray represents the features of samples of one category and has shape shape=[n_samples, n_features].
+            n_samples may vary between categories.
+        downsampling_ratio : float, between 0 and 1
+            Discard a proportion downsampling_ratio of the data for plotting
+            NOTE: Not yet implemented
+
+        Depends
+        ------------------
+        barktools.plot_utils.color_cycler_plt
+
+    '''
     tsne = TSNE(n_components=2)
     color_cycler = color_cycler_plt()
 
@@ -76,8 +107,21 @@ def scatter_tsne_2d(data, downsampling_ratio=0):
 
     plt.show()
 
-# Generate bin edges for a histogram with specified width for target data
 def get_bins(data, bin_width):
+    ''' Generate bin edges for a histogram with specified width for target data
+
+        Parameters
+        -----------------
+        data : array_like
+            Data to be plotted in a histogram
+        bin_width : float
+            Target bin width of histogram bins
+
+        Returns
+        -------------------
+        bins : list
+            List of bin edges, including right edge of rightmost bin
+    '''
     lower = min(data)
     upper = max(data)
     n_bins = math.ceil((upper-lower) / bin_width)
@@ -96,36 +140,76 @@ def get_bins(data, bin_width):
 # fig = plt.figure()
 # ax = fig.add_subplot(111)
 # ax_gen.__update_ax__(ax, index)
-class AxesGenerator(object):
-    def __update_ax__(self, ax, index):
+class AxesGenerator:
+    ''' Abstract base class which maps an index to axis content, and updates an axis with that content.
+
+        Example usage
+        -----------------
+        fig = plt.figure()
+        ax = fig.add_subplot(1,1,1)
+        ax_gen = AxesGeneratorExample()
+        ax_gen.update_ax(ax, 3)
+
+    '''
+    def update_ax(self, ax, index):
+        ''' Update the contents of 'ax' according 'index'
+
+            Parameters 
+            ----------------
+            ax : matplotlib.axes.Axes
+                Axes whose contents is to be updated
+            index : int
+                Content index
+        '''
         raise NotImplementedError
     def __len__(self):
         raise NotImplementedError
 
-# Updates the axes object of a figure when you scroll according to an Axes-generator which outputs an axes according to an index 
-class PlotScroller(object):
+class PlotScroller:
+    ''' Updates the axes object of a figure when you scroll according to an Axes-generator which outputs an axes according to an index 
+
+        Parameters
+        ----------------
+        ax : matplotlib.axes.Axes
+            Axes whose content is to be updated on scroll
+        ax_gen : AxesGenerator
+            AxesGenerator to determine how the contents is updated when scrolling up/down
+
+        Example usage
+        ----------------------
+        fig = plt.figure()
+        ax = fig.add_subplot(1,1,1)
+        ax_gen = AxesGeneratorExample()
+        plot_scroller = PlotScroller(ax, ax_gen)
+
+        Depends
+        -------------------
+        barktool.plot_utils.AxesGenerator
+
+    '''
     def __init__(self, ax, ax_gen):
-        # Axes Generator
+
         self.ax_gen = ax_gen # Instance of AxesGenerator
-        self.len = self.ax_gen.len
         self.ax = ax
 
-        # State
-        self.index = 0
+        self.__index = 0
+        self.__len = len(self.ax_gen)
 
-        # Initialize
-        self.draw()
-        self.ax.get_figure().canvas.mpl_connect('scroll_event', onscroll)
+        self.__draw()
+        self.ax.get_figure().canvas.mpl_connect('scroll_event', self.__onscroll)
 
-    def onscroll(self, event): 
+    def __onscroll(self, event): 
         if event.button == 'up':
-            self.index = (self.index + 1) % self.len
+            self.__index = (self.__index + 1) % self.__len
         else:
-            self.index = (self.index - 1) % self.len
-        self.draw()
+            self.__index = (self.__index - 1) % self.__len
+        self.__draw()
 
-    def draw(self):
-        self.ax_gen.__update_ax__(self.ax, self.index)
+    def __draw(self):
+        self.ax_gen.__update_ax__(self.ax, self.__index)
         plt.draw()
+
+    def __len__(self):
+        return self.__len
 
 
