@@ -85,9 +85,9 @@ def scatter_tsne_2d(data, downsampling_ratio=0):
             Discard a proportion downsampling_ratio of the data for plotting
             NOTE: Not yet implemented
 
-        Depends
+        Notes
         ------------------
-        barktools.plot_utils.color_cycler_plt
+        - (DEPENDS) barktools.plot_utils.color_cycler_plt
 
     '''
     tsne = TSNE(n_components=2)
@@ -143,7 +143,7 @@ def get_bins(data, bin_width):
 class AxesGenerator:
     ''' Abstract base class which maps an index to axis content, and updates an axis with that content.
 
-        Example usage
+        Examples
         -----------------
         fig = plt.figure()
         ax = fig.add_subplot(1,1,1)
@@ -175,16 +175,16 @@ class PlotScroller:
         ax_gen : AxesGenerator
             AxesGenerator to determine how the contents is updated when scrolling up/down
 
-        Example usage
+        Examples
         ----------------------
         fig = plt.figure()
         ax = fig.add_subplot(1,1,1)
         ax_gen = AxesGeneratorExample()
         plot_scroller = PlotScroller(ax, ax_gen)
 
-        Depends
+        Notes
         -------------------
-        barktool.plot_utils.AxesGenerator
+        - (DEPENDS) barktool.plot_utils.AxesGenerator
 
     '''
     def __init__(self, ax, ax_gen):

@@ -221,7 +221,8 @@ def get_selected_data(idx, *args):
 def generate_name():
     ''' Generates a unique, random and memorable file name
 
-        Returns:
+        Returns
+        -------------------
         name : str
             A unique name
 
@@ -352,6 +353,7 @@ def load_txt(path):
             Path from which to load file
 
         Returns
+        -------------------
         str
             File content as string
     '''
@@ -383,11 +385,8 @@ class Clocker:
         ---------------------
         - Assume time to perform tick() is negligible 
         - Logging to file not yet implemented
-
-        Depends
-        --------------
-        barktools.base_utils.Stopwatch
-        barktools.base_utils.RingBuffer
+        - (DEPENDS) barktools.base_utils.Stopwatch
+        - (DEPENDS) barktools.base_utils.RingBuffer
     '''
 
     def __init__(self, buffer_size=100, log_path=None):
@@ -427,7 +426,8 @@ class Clocker:
 class MultiClocker:
     ''' Class for measuring time between ticks and storing samples for multiple sources
 
-        Notes:
+        Notes
+        --------------------
         - Assume time to perform tick() is negligible. # WARNING: Current implementation is very inefficient, assumption does not hold for some cases
     '''
 
