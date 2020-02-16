@@ -20,3 +20,6 @@ Arguments:
 - -n, number of leading zeros for target filenames
 - -e, only process files with this extension
 
+# TODO:
+
+- [ ] Reffa till variabler med ``var`` i docstrings för att tydliggöra i dokumentationen att detta är en variabel
