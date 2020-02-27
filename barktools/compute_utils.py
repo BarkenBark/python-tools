@@ -1,4 +1,5 @@
 #import numpy as np
+import pandas as pd
 
 class MultiBaseNumber:
     """ Class representing a 'multi-base number', i.e. a number whose digits stem from different bases
@@ -74,3 +75,62 @@ class MultiBaseNumber:
             n = n + b*self.digits[i]
             b = b*self.bases[i]
         return n
+
+class MinusInf:
+    def __eq__(self, other):
+        return False
+    def __ne__(self, other):
+        return True
+    def __lt__(self, other):
+        return True
+    def __gt__(self, other):
+        return False
+    def __le__(self, other):
+        return True
+    def __ge__(self, other):
+        return False
+    def __str__(self):
+        return '-inf'
+
+class PlusInf():
+    def __eq__(self, other):
+        return False
+    def __ne__(self, other):
+        return True
+    def __lt__(self, other):
+        return False
+    def __gt__(self, other):
+        return True
+    def __le__(self, other):
+        return False
+    def __ge__(self, other):
+        return True
+    def __str__(self):
+        return '+inf'
+
+def get_brackets(df, col, bracket_edges):
+    brackets = pd.Series(np.nan, index=df.index)
+    n_brackets = len(bracket_edges)+1
+    for iBracket in range(n_brackets):
+        lower = bracket_edges[iBracket-1] if (iBracket > 0) else MinusInf()
+        upper = bracket_edges[iBracket] if (iBracket < n_brackets-1) else PlusInf()
+        brackets.loc[(lower<df[col]) & (df[col]<upper)] = iBracket
+    return brackets
+
+#TODO: Enable include_beyond functionality
+def conditional_group_by(df, col, bracket_edges, include_beyond='both'):
+    ''' Returns a groupby object for df where rows with col in bins defined by bracket_edges grouped together
+    
+        Parameters
+        ------------
+        col : str
+            The single column for which to produce brackets w.r.t
+        bracket_edges : list
+            Ordered values (ascending) defining the bracket edges of the column specified by col
+        include_beyond : {'none', 'left', 'right', 'both'}
+            'left' => samples with col value < bracket_edges[0] will be included
+            'right' => samples with col value > bracket_edges[-1] will be included
+            'both' => both 'left' and 'right'
+    '''
+    brackets = get_brackets(df, col, bracket_edges, include_beyond=include_beyond)    
+    return df.groupby(brackets)
