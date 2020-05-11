@@ -85,7 +85,12 @@ def list_files_recursive(directory, extension=None, include_dir=False):
         files : list of string
             list of files in directory and its subdirectories           
     '''
-    return [os.path.join(root, file) for root, dirs, files in os.walk(directory) for file in files if file.endswith(extension)]
+    extension = "" if extension is None else extension
+    files = [os.path.join(root, file) for root, _, files in os.walk(directory) for file in files if file.endswith(extension)]
+    if not include_dir:
+        files = [file.replace(directory+os.sep, "") for file in files]
+    return files
+        
 
 
 # Change the filenames of files in 'directory' whose filenames are numbers to be formatted with 'n_leading_zeros' zeros
