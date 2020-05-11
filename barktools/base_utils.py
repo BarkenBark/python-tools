@@ -371,7 +371,7 @@ def load_txt(path):
 #####################################################
 
 # TODO: Implement logging to file
-class Clocker:
+class Ticker:
     ''' Class for measuring time between ticks and storing samples
 
         Parameters
@@ -428,7 +428,7 @@ class Clocker:
 
 # TODO: Warn user when measuring times too fast for this class to work properly with/without logging 
 # TODO: Find more efficient implementation
-class MultiClocker:
+class MultiTicker:
     ''' Class for measuring time between ticks and storing samples for multiple sources
 
         Notes
@@ -541,7 +541,74 @@ class Stopwatch:
         self.start()
         return elapsed
 
+class Clocker:
+    """ Class for easily measuring running times and storing samples
 
+        Example usage:
+        c = PerfClocker(logdir)
+        for i in range(100):
+            c.clock('fun1')
+            fun1()
+            c.clock('fun2')
+            fun2()
+
+        Above code snippet would store 100 samples of the execution time of fun1() and fun2() in files 'logdir/fun1.txt' and 'logdir/fun2.txt'.
+        The sample time measured between clocks is the time it takes between subsequnt calls to clock() or the time between clock() and stop_clock()
+
+        Parameters
+        -----------------------------
+        logdir : str
+            Path to directory in which to store time samples
+    """
+    def __init__(self, logdir):
+        os.makedirs(logdir, exist_ok=True)
+        self.logdir = logdir
+        self.target_logs = {}
+        self._current_target = None
+        self._t = None
+    
+    def clock(self, target):
+        """Stop current time measurement (if any) and start new time measurement of target
+
+        Parameters
+        ----------
+        target : str
+            tag of process to measure time sample of
+        """
+        if self._t is not None:
+            self.stop_clock()
+        if target not in self.target_logs.keys():
+            self._add_target(target)
+        self._start_clock(target)
+
+    def stop_clock(self):
+        """Stop current time measurement (if any)
+        """
+        t_elapsed = (time.time_ns() - self._t) / 1e9
+        self.target_logs[self._current_target].write(str(t_elapsed)+'\n')
+        self._current_target = None
+
+    def flush(self):
+        """Flush all the current log files
+        """
+        for file in self.target_logs.values():
+            file.flush()
+
+    def close(self):
+        """Close all the current log files
+        """
+        for file in self.target_logs.values():
+            file.close()
+
+    def _start_clock(self, target):
+        self._current_target = target
+        self._t = time.time_ns()
+
+    def _add_target(self, target):
+        self.target_logs[target] = open(os.path.join(self.logdir, target+'.txt'), 'a')
+
+    def __del__(self):
+        self.close()
 
 # DATA STRUCTURES
 ##########################################
