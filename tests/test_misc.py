@@ -45,7 +45,7 @@ class TestClocker:
             
             # Assert that measurements are acceptable
             individual_centi_tol = 5e-2
-            mean_centi_tol = 1e-3
+            mean_centi_tol = 2e-3
             centi_times = []
             with open(centi_path, 'r') as file:
                 for line in file:
@@ -55,7 +55,7 @@ class TestClocker:
             assert abs(centi_times_mean-0.01) <  mean_centi_tol
 
             individual_milli_tol = 5e-2
-            mean_milli_tol = 1e-3
+            mean_milli_tol = 2e-3
             milli_times = []
             with open(milli_path, 'r') as file:
                 for line in file:
