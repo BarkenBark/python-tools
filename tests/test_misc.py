@@ -5,6 +5,7 @@ import tempfile
 
 from barktools.base_utils import RingBuffer
 from barktools.base_utils import Clocker
+from barktools.base_utils import generate_name
 
 from tests.test_helper import TMP_DIR
 
@@ -33,6 +34,7 @@ class TestClocker:
 
             # Simulate process and make measurements
             clocker = Clocker(tmp_dir)
+            clocker.add_targets('sleep_centi', 'sleep_milli')
 
             for _ in range(100):
                 clocker.clock('sleep_centi')
@@ -63,3 +65,8 @@ class TestClocker:
             assert all([abs(milli_time-0.001) < individual_milli_tol for milli_time in milli_times])
             milli_times_mean = sum(milli_times)/len(milli_times)
             assert abs(milli_times_mean-0.001) <  mean_milli_tol
+
+def test_generate_name():
+    names = []
+    for _ in range(10000):
+        names.append(generate_name())

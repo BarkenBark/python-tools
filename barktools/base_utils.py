@@ -545,7 +545,7 @@ class Clocker:
     """ Class for easily measuring running times and storing samples
 
         Example usage:
-        c = PerfClocker(logdir)
+        c = Clocker(logdir)
         for i in range(100):
             c.clock('fun1')
             fun1()
@@ -560,13 +560,14 @@ class Clocker:
         logdir : str
             Path to directory in which to store time samples
     """
-    def __init__(self, logdir):
+    def __init__(self, logdir, *targets):
         os.makedirs(logdir, exist_ok=True)
         self.logdir = logdir
         self.target_logs = {}
         self._current_target = None
         self._t = None
-    
+        self.add_targets(*targets)
+
     def clock(self, target):
         """Stop current time measurement (if any) and start new time measurement of target
 
@@ -578,7 +579,7 @@ class Clocker:
         if self._t is not None:
             self.stop_clock()
         if target not in self.target_logs.keys():
-            self._add_target(target)
+            self.add_targets(target)
         self._start_clock(target)
 
     def stop_clock(self):
@@ -587,6 +588,12 @@ class Clocker:
         t_elapsed = (time.time_ns() - self._t) / 1e9
         self.target_logs[self._current_target].write(str(t_elapsed)+'\n')
         self._current_target = None
+
+    def add_targets(self, *targets):
+        """Open log files to append with time measurements
+        """
+        for target in targets:
+            self.target_logs[target] = open(os.path.join(self.logdir, target+'.txt'), 'a')
 
     def flush(self):
         """Flush all the current log files
@@ -603,9 +610,6 @@ class Clocker:
     def _start_clock(self, target):
         self._current_target = target
         self._t = time.time_ns()
-
-    def _add_target(self, target):
-        self.target_logs[target] = open(os.path.join(self.logdir, target+'.txt'), 'a')
 
     def __del__(self):
         self.close()
