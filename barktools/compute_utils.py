@@ -1,4 +1,4 @@
-#import numpy as np
+import numpy as np
 import pandas as pd
 
 class MultiBaseNumber:
@@ -117,20 +117,20 @@ def get_brackets(df, col, bracket_edges):
         brackets.loc[(lower<df[col]) & (df[col]<upper)] = iBracket
     return brackets
 
-#TODO: Enable include_beyond functionality
-def conditional_group_by(df, col, bracket_edges, include_beyond='both'):
-    ''' Returns a groupby object for df where rows with col in bins defined by bracket_edges grouped together
+# #TODO: Enable include_beyond functionality
+# def conditional_group_by(df, col, bracket_edges, include_beyond='both'):
+#     ''' Returns a groupby object for df where rows with col in bins defined by bracket_edges grouped together
     
-        Parameters
-        ------------
-        col : str
-            The single column for which to produce brackets w.r.t
-        bracket_edges : list
-            Ordered values (ascending) defining the bracket edges of the column specified by col
-        include_beyond : {'none', 'left', 'right', 'both'}
-            'left' => samples with col value < bracket_edges[0] will be included
-            'right' => samples with col value > bracket_edges[-1] will be included
-            'both' => both 'left' and 'right'
-    '''
-    brackets = get_brackets(df, col, bracket_edges, include_beyond=include_beyond)    
-    return df.groupby(brackets)
+#         Parameters
+#         ------------
+#         col : str
+#             The single column for which to produce brackets w.r.t
+#         bracket_edges : list
+#             Ordered values (ascending) defining the bracket edges of the column specified by col
+#         include_beyond : {'none', 'left', 'right', 'both'}
+#             'left' => samples with col value < bracket_edges[0] will be included
+#             'right' => samples with col value > bracket_edges[-1] will be included
+#             'both' => both 'left' and 'right'
+#     '''
+#     brackets = get_brackets(df, col, bracket_edges, include_beyond=include_beyond)    
+#     return df.groupby(brackets)
