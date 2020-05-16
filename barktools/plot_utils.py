@@ -6,7 +6,6 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import colors as mcolors
-from sklearn.manifold import TSNE
 
 
 
