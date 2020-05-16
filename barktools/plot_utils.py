@@ -213,3 +213,26 @@ class PlotScroller:
         return self.__len
 
 
+# Plotting functions (Create specific plots)
+def plot_timelines(ax, event_times, unit="h"):
+    """Plots timelines for each of n_trials process realizations next to each other
+    
+    Parameters
+    ----------
+    ax : matplotlib.axes.Axes
+        Matplotlib axes object to plot into
+    event_times : list of np.ndarray, len=n_trials
+        event_times[i] contains an ndarray of event times for the i:th trial
+    unit : str
+    """
+    n_timelines = len(event_times)
+    timeline_heights = np.linspace(0, 1, num=n_timelines+2)[1:-1]
+    for i in range(n_timelines):
+        ax.scatter(event_times[i], timeline_heights[i]*np.ones(len(event_times[i])), marker='|')
+    ax.set_ylim(0,1)
+    ax.set_yticks(timeline_heights, minor=False)
+    ax.set_yticklabels(np.arange(n_timelines)+1)
+    ax.yaxis.grid(True, which='major')
+    ax.set_ylabel('Timeline #')
+    ax.set_xlabel(f"Time ({unit})")
+
