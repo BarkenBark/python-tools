@@ -32,3 +32,7 @@ def test_list_files_recursive():
     assert set(files_2) == set([file for file in files_gt if file.endswith("file")])
     files_3 = list_files_recursive(EXAMPLE_DIR, include_dir=True)
     assert set(files_3) == set([join(EXAMPLE_DIR, file) for file in files_gt])
+    files_4 = list_files_recursive(EXAMPLE_DIR, extension=("txt", "file"))
+    assert set(files_4) == set([file for file in files_gt if ((file.endswith("txt")) or (file.endswith("file")))])
+    files_5 = list_files_recursive(EXAMPLE_DIR, extension=["txt", "file"])
+    assert set(files_5) == set([file for file in files_gt if ((file.endswith("txt")) or (file.endswith("file")))])

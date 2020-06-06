@@ -15,7 +15,7 @@ def find_nbr_of_files(directory, extension=None):
         directory : string
             path to directory
         extension : string
-            Only count files ending with extension.
+            Only include files ending with string(s) specified by extension. 
             extension==None (default) means all filed will be counted.
 
         Returns 
@@ -23,6 +23,8 @@ def find_nbr_of_files(directory, extension=None):
         n : int
             Number of files in directory
     '''
+    extension = tuple(extension) if type(extension) == list else extension
+
     n = 0
     for filename in os.listdir(directory):
         if os.path.isfile(os.path.join(directory, filename)):
@@ -42,7 +44,7 @@ def list_files(directory, extension=None, include_dir=False):
         directory : string
             path to directory
         extension : string
-            Only include files ending with extension. 
+            Only include files ending with string(s) specified by extension. 
             extension==None (default) means all filed will be counted.
         include_dir : bool
             True => Prepend filenames with directory path for each file
@@ -53,6 +55,8 @@ def list_files(directory, extension=None, include_dir=False):
         files : list of string
             list of files in directory
     '''
+    extension = tuple(extension) if type(extension) == list else extension    
+
     files = []
     for filename in os.listdir(directory):
         if os.path.isfile(os.path.join(directory, filename)):
@@ -74,9 +78,9 @@ def list_files_recursive(directory, extension=None, include_dir=False):
         -------------
         directory : string
             path to directory
-        extension : string
-            Only include files ending with extension. 
-            extension==None (default) means all filed will be counted.
+        extension : string or list/tuple of string
+            Only include files ending with string(s) specified by extension. 
+            extension==None (default) means all files will be counted.
         include_dir : bool
             (ONLY TRUE WORKS ATM) True => Prepend filenames with directory path for each file
 
@@ -84,8 +88,11 @@ def list_files_recursive(directory, extension=None, include_dir=False):
         -----------------
         files : list of string
             list of files in directory and its subdirectories           
+            
     '''
     extension = "" if extension is None else extension
+    extension = tuple(extension) if type(extension) == list else extension
+
     files = [os.path.join(root, file) for root, _, files in os.walk(directory) for file in files if file.endswith(extension)]
     if not include_dir:
         files = [file.replace(directory+os.sep, "") for file in files]
@@ -103,10 +110,12 @@ def change_num_format(directory, extension=None, n_leading_zeros=5):
         directory : string
             Path to directory
         extension : string
-            Only include files ending with extension
+            Only include files ending with string(s) specified by extension. 
         n_leading_zeros : int (default=5)
             Format filenames to have n_leading_zeros leading zeros
     '''
+    extension = tuple(extension) if type(extension) == list else extension
+
     for filename in os.listdir(directory):
         if extension is not None:
             if filename.endswith(extension):
