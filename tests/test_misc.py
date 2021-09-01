@@ -2,10 +2,14 @@ from os.path import join
 import time
 from time import sleep
 import tempfile
+import pytest
+
+import numpy as np
 
 from barktools.base_utils import RingBuffer
 from barktools.base_utils import Clocker
 from barktools.base_utils import generate_name
+from barktools.compute_utils import bind_angle
 
 from tests.test_helper import TMP_DIR
 
@@ -70,3 +74,15 @@ def test_generate_name():
     names = []
     for _ in range(10000):
         names.append(generate_name())
+
+def test_bind_angles():
+    deg2rad = np.pi/180.0
+    assert bind_angle(10*deg2rad, 0) == pytest.approx(10*deg2rad)
+    assert bind_angle(-10*deg2rad, 0) == pytest.approx(350*deg2rad)
+    assert bind_angle(370*deg2rad, 0) == pytest.approx(10*deg2rad)
+    assert bind_angle(-370*deg2rad, 0) == pytest.approx(350*deg2rad)
+
+    assert bind_angle(10*deg2rad, -np.pi) == pytest.approx(10*deg2rad)
+    assert bind_angle(-10*deg2rad, -np.pi) == pytest.approx(-10*deg2rad)
+    assert bind_angle(370*deg2rad, -np.pi) == pytest.approx(10*deg2rad)
+    assert bind_angle(-370*deg2rad, -np.pi) == pytest.approx(-10*deg2rad)

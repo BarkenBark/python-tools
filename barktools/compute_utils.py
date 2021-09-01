@@ -134,3 +134,38 @@ def get_brackets(df, col, bracket_edges):
 #     '''
 #     brackets = get_brackets(df, col, bracket_edges, include_beyond=include_beyond)    
 #     return df.groupby(brackets)
+
+
+'''
+Converts an angle in radians in the specified range of 2pi radians of angular length from the lower bound
+
+Examples:
+    bind_angle(10deg, 0) == 10deg
+    bind_angle(-10deg, 0) == 350deg
+    bind_angle(370deg, 0) == 10deg
+    bind_angle(-370deg, 0) == 350deg
+
+    bind_angle(10deg, -np.pi) == 10deg
+    bind_angle(-10deg, -np.pi) == -10deg
+    bind_angle(370deg, -np.pi) == 10deg
+    bind_angle(-370deg, -np.pi) == -10deg
+'''
+def bind_angle(angle, lower_bound):
+    return (angle - lower_bound) % (2*np.pi) + lower_bound
+
+'''
+Converts an angle in degrees in the specified range of 360 degrees of angular length from the lower bound
+
+Examples:
+    bind_angle(10, 0) == 10
+    bind_angle(-10, 0) == 350
+    bind_angle(370, 0) == 10
+    bind_angle(-370, 0) == 350 
+
+    bind_angle(10, -180) == 10
+    bind_angle(-10, -180) == -10
+    bind_angle(370, -180) == 10
+    bind_angle(-370, -180) == -10
+'''
+def bind_angle_degrees(angle, lower_bound):
+    return (angle - lower_bound) % 360 + lower_bound
