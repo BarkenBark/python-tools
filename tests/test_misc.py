@@ -9,7 +9,7 @@ import numpy as np
 from barktools.base_utils import RingBuffer
 from barktools.base_utils import Clocker
 from barktools.base_utils import generate_name
-from barktools.compute_utils import bind_angle
+from barktools.compute_utils import bind_angle, bind_angle_degrees, angular_diff, angular_diff_degrees
 
 from tests.test_helper import TMP_DIR
 
@@ -86,3 +86,37 @@ def test_bind_angles():
     assert bind_angle(-10*deg2rad, -np.pi) == pytest.approx(-10*deg2rad)
     assert bind_angle(370*deg2rad, -np.pi) == pytest.approx(10*deg2rad)
     assert bind_angle(-370*deg2rad, -np.pi) == pytest.approx(-10*deg2rad)
+
+def test_bind_angles_degrees():
+    assert bind_angle_degrees(10, 0) == pytest.approx(10)
+    assert bind_angle_degrees(-10, 0) == pytest.approx(350)
+    assert bind_angle_degrees(370, 0) == pytest.approx(10)
+    assert bind_angle_degrees(-370, 0) == pytest.approx(350)
+
+    assert bind_angle_degrees(10, -180) == pytest.approx(10)
+    assert bind_angle_degrees(-10, -180) == pytest.approx(-10)
+    assert bind_angle_degrees(370, -180) == pytest.approx(10)
+    assert bind_angle_degrees(-370, -180) == pytest.approx(-10)
+
+def test_angular_diff():
+    deg2rad = np.pi/180.0
+    assert angular_diff(30*deg2rad, 20*deg2rad) == pytest.approx(10*deg2rad)
+    assert angular_diff(20*deg2rad, 30*deg2rad) == pytest.approx(-10*deg2rad)
+    assert angular_diff(10*deg2rad, 350*deg2rad) == pytest.approx(20*deg2rad)
+    assert angular_diff(350*deg2rad, 10*deg2rad) == pytest.approx(-20*deg2rad)
+    assert (angular_diff(180*deg2rad, 0*deg2rad) == pytest.approx(180*deg2rad) or angular_diff(180*deg2rad, 0*deg2rad) == pytest.approx(-180*deg2rad))
+    assert (angular_diff(0*deg2rad, 180*deg2rad) == pytest.approx(180*deg2rad) or angular_diff(0*deg2rad, 180*deg2rad) == pytest.approx(-180*deg2rad))
+    assert angular_diff(90*deg2rad, 200*deg2rad) == pytest.approx(-110*deg2rad)
+    assert angular_diff(10*deg2rad, 200*deg2rad) == pytest.approx(170*deg2rad)
+    assert angular_diff(200*deg2rad, 10*deg2rad) == pytest.approx(-170*deg2rad)
+
+def test_angular_diff_degrees():
+    assert angular_diff_degrees(30, 20) == pytest.approx(10)
+    assert angular_diff_degrees(20, 30) == pytest.approx(-10)
+    assert angular_diff_degrees(10, 350) == pytest.approx(20)
+    assert angular_diff_degrees(350, 10) == pytest.approx(-20)
+    assert (angular_diff_degrees(180, 0) == pytest.approx(180) or angular_diff_degrees(180, 0) == pytest.approx(-180))
+    assert (angular_diff_degrees(0, 180) == pytest.approx(180) or angular_diff_degrees(0, 180) == pytest.approx(-180))
+    assert angular_diff_degrees(90, 200) == pytest.approx(-110)
+    assert angular_diff_degrees(10, 200) == pytest.approx(170)
+    assert angular_diff_degrees(200, 10) == pytest.approx(-170)

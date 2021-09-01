@@ -169,3 +169,45 @@ Examples:
 '''
 def bind_angle_degrees(angle, lower_bound):
     return (angle - lower_bound) % 360 + lower_bound
+
+'''
+Returns the minimum signed angular difference between two angles in radians (how many radians in the shortest rotation direction do we need to travel from a to b).
+Only when the actual difference between the angles is less than 3pi radians
+
+Examples:
+    angular_diff(30deg, 20deg) == 10deg
+    angular_diff(20deg, 30deg) == -10deg
+    angular_diff(10deg, 350deg) == 20deg
+    angular_diff(350deg, 10deg) == -20deg
+    angular_diff(180deg, 0deg) == 180deg or -180deg, either one is fine
+    angular_diff(0deg, 180deg) == 180deg or -180deg, either one is fine
+    angular_diff(90deg, 200deg) == -110deg
+    angular_diff(10deg, 200deg) == 170deg
+    angular_diff(200deg, 10deg) == -170deg
+'''
+def angular_diff(b, a):
+    if np.abs(b-a)>np.pi:
+        return np.sign(a-b)*2*np.pi + (b-a)
+    else:
+        return (b-a)
+
+'''
+Returns the minimum signed angular difference between two angles in degrees (how many degrees in the shortest rotation direction do we need to travel from a to b).
+Only when the actual difference between the angles is less than 540 degrees
+
+Examples:
+    angular_diff(30, 20) == 10
+    angular_diff(20, 30) == -10
+    angular_diff(10, 350) == 20
+    angular_diff(350, 10) == -20
+    angular_diff(180, 0) == 180 or -180, either one is fine
+    angular_diff(0, 180) == 180 or -180, either one is fine
+    angular_diff(90, 200) == -110
+    angular_diff(10, 200) == 170
+    angular_diff(200, 10) == -170
+'''
+def angular_diff_degrees(b, a):
+    if np.abs(b-a)>180:
+        return np.sign(a-b)*360 + (b-a)
+    else:
+        return (b-a)
