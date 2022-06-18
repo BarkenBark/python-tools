@@ -5,6 +5,8 @@ from pathlib import Path
 from paramiko import SSHClient
 from tqdm import tqdm
 
+from .base_utils import user_yes_no
+
 MB_PER_BYTE = 1000000
 
 

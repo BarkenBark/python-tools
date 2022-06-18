@@ -3,7 +3,7 @@ import os
 import pickle
 import random
 import time
-from typing import List
+from typing import List, Optional
 
 # DIRECTORY AND FILE MANIPULATION
 ################################################
@@ -795,16 +795,16 @@ class RingBuffer:
 def list_options(options: List[str], *additional_attributes: List[str]) -> None:
     """Format and print a list of options with optional additional attributes.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     options:
         List of options to display.
     additional_attributes:
         Lists of additional attributes to display next to each option. Each list in
         `additional_attributes` must be of the same length as `options`.
 
-    Examples:
-    ---------
+    Examples
+    --------
     list_options(["ant", "elephant"], ["insect", "mammal"], ["creepy", ""]) will result
     in the following print:
         `1: ant      insect creepy
@@ -821,6 +821,68 @@ def list_options(options: List[str], *additional_attributes: List[str]) -> None:
 
     for option in zip(indices, options, *attributes):
         print(" ".join(option))
+
+
+def select_options(
+    options: List[str],
+    *additional_attributes: List[str],
+    prompt: Optional[str] = None,
+    options_label: str = "options",
+) -> List[str]:
+    """Prompt user to select a subset of available options.
+
+    Display a neatly formatted list of options with optional additional attributes, and
+    ask user to select a subset of the options by entering space separated indices.
+
+    Options are entered by a space separated list of displayed indices. The first option
+    will have index 1. Entering 0 will select all options. Entering nothing will select
+    no options.
+
+    Parameters
+    ----------
+    options:
+        List of options to display.
+    additional_attributes:
+        Lists of additional attributes to display next to each option. Each list in
+        `additional_attributes` must be of the same length as `options`.
+    prompt:
+        Prompt to show user next to index selection. Omit for a default prompt.
+    options_label:
+        Name of option type. Will substitute "options" in prompts.
+
+    Returns
+    -------
+    selected_options: List[str]
+        The subset of options selected by the user.
+
+    Notes
+    -----
+    See docstring of `list_options` for an explanation of how the printed list of
+    options is formatted.
+    """
+    list_options(options, *additional_attributes)
+
+    if not prompt:
+        prompt = (
+            f"Enter space separated indices of {options_label} to select (0 for "
+            "all, empty for none): "
+        )
+    while True:
+        user_input = input(prompt).rstrip()
+        try:
+            if user_input:
+                return (
+                    options
+                    if (user_input == "0")
+                    else [
+                        options[int(choice) - 1]
+                        for choice in user_input.rstrip().split(" ")
+                    ]
+                )
+            else:
+                return []
+        except Exception as e:
+            print(f"Failed to parse selected {options_label} (error message: {e}).")
 
 
 def user_yes_no(prompt: str) -> bool:
