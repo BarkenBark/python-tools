@@ -1,9 +1,11 @@
 # Functions here have no dependencies outside the Python Standard Library
+import hashlib
 import os
 import pickle
 import random
 import time
-from typing import List, Optional
+from pathlib import Path
+from typing import Any, BinaryIO, Callable, List, Optional
 
 # DIRECTORY AND FILE MANIPULATION
 ################################################
@@ -740,6 +742,14 @@ class Clocker:
         self.close()
 
 
+def hours_minutes_seconds(seconds: float) -> str:
+    seconds = int(seconds)
+    hours = seconds // 3600
+    minutes = (seconds - hours * 3600) // 60
+    seconds = seconds - hours * 3600 - minutes * 60
+    return f"{hours} hour(s), {minutes} minute(s) and {seconds} second(s)"
+
+
 # DATA STRUCTURES
 ##########################################
 
@@ -906,3 +916,64 @@ def user_yes_no(prompt: str) -> bool:
             return False
         else:
             print("Invalid response. Enter y or n.")
+
+
+# CACHING
+##########################################################################
+
+
+REPO_ROOT = Path(__file__).parents[1]
+# TODO (oscarb): Use `inspect` to figure out directory of caller file and use that as
+# default value instead.
+CACHE_DIR = REPO_ROOT / ".cache"
+
+
+def simple_hash_fun(*args, **kwargs) -> str:
+    """
+    Assumes that all arguments can be cast to a string.
+    """
+    return hashlib.sha1(
+        ("§".join((str(arg) for arg in args)) + str(kwargs)).encode()
+    ).hexdigest()
+
+
+def cache(
+    hash_fun: Callable[..., str] = simple_hash_fun,
+    cache_dir: Path = CACHE_DIR,
+    cache_id: str = None,
+    dump_fn: Callable[[Any, BinaryIO], None] = pickle.dump,
+    load_fn: Callable[[BinaryIO], Any] = pickle.load,
+):
+    """
+    Decorator which caches output of a function based on hashable function inputs.
+
+    A function which is decorated with this decorator will create a hash from the values
+    of the passed function arguments when called. If there exists a cached output
+    corresponding to that hash, the cached value will be loaded and returned instead of
+    calling the function. If not, the function will be called and the output will be
+    cached with the hash as a key.
+
+    User must supply a function which produces a hash from the values of the input.
+    """
+
+    def _decorator(fun):
+        def wrapper(*args, **kwargs):
+            cache_id_ = cache_id if cache_id else fun.__name__
+            hash = hash_fun(*args, **kwargs)
+            cache_fp = cache_dir / cache_id_ / f"{hash}.cache"
+
+            if cache_fp.is_file():
+                with open(cache_fp, "rb") as f:
+                    return load_fn(f)
+
+            output = fun(*args, **kwargs)
+
+            cache_fp.parent.mkdir(parents=True, exist_ok=True)
+            with open(cache_fp, "wb") as f:
+                dump_fn(output, f)
+
+            return output
+
+        return wrapper
+
+    return _decorator
