@@ -1,6 +1,6 @@
 # barktools
 
-A collection of utilities I find useful. Yes.
+This repository is intended as a practice ground for me to try out various Python tools, such as packaging, distribution, documentation generation, testing and CI/CD automation. It also serves as a repository of functions and scripts I may find useful.
 
 ## Modules
 ### base_utils
