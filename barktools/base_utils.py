@@ -488,6 +488,7 @@ def load_txt(path):
 # TIME MEASUREMENTS
 #####################################################
 
+
 # TODO: Implement logging to file
 class Ticker:
     """Class for measuring time between ticks and storing samples
@@ -753,6 +754,7 @@ def hours_minutes_seconds(seconds: float) -> str:
 # DATA STRUCTURES
 ##########################################
 
+
 # TODO: Allow resizing ringbuffer after instantiation
 class RingBuffer:
     """Class which implements a simple ring buffer
@@ -800,6 +802,7 @@ class RingBuffer:
 
 # USER DIALOGUES
 ##################################################################
+
 
 # NOTE: Each element in `additional_attributes` is a list of strings.
 def list_options(options: List[str], *additional_attributes: List[str]) -> None:
