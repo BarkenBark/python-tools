@@ -2,6 +2,7 @@
 import itertools
 import math
 import random
+from typing import Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -240,3 +241,32 @@ def plot_timelines(ax, event_times, unit="h"):
     ax.yaxis.grid(True, which="major")
     ax.set_ylabel("Timeline #")
     ax.set_xlabel(f"Time ({unit})")
+
+
+def get_optimal_grid_config(
+    n: int, w_page: float, h_page: float, w_cell: float, h_cell: float
+) -> Tuple[int, int]:  # n_rows, n_cols
+    page_ratio = h_page / w_page
+    cell_ratio = h_cell / w_cell
+
+    if n == 1:
+        return (1, 1)
+
+    n_rows, n_cols = get_optimal_grid_config(n - 1, w_page, h_page, w_cell, h_cell)
+    if n <= n_rows * n_cols:
+        return n_rows, n_cols
+
+    # If n cells do not fit into previously optimal config, extend either
+    # number of rows or cols. The path to take is the one which maximizes the
+    # resulting cell scale.
+    else:
+        gamma_a = min(
+            1 / (n_cols + 1), page_ratio / cell_ratio / n_rows
+        )  # Path a: Extend n_cols
+        gamma_b = min(
+            1 / n_cols, page_ratio / cell_ratio / (n_rows + 1)
+        )  # Path b: Extend n_rows
+        if gamma_a > gamma_b:
+            return (n_rows, n_cols + 1)
+        else:
+            return (n_rows + 1, n_cols)
